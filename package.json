@@ -6,15 +6,16 @@
   "directories": {
     "lib": "lib"
   },
+  "engines": {
+    "node": "16.15.0"
+},
   "scripts": {
     "build": "cd client && npm run build",
     "install-client": "cd client && npm install",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm run install-client && npm run build",
-    "start": "nodemon app.js",
+    "heroku-postbuild": "npm run install-client && npm run build",
+    "start": "node app.js",
     "client": "cd client && npm start",
     "dev": "concurrently -n 'server,client' -c 'red,green'  \"npm start\" \"npm run client\"",
-    "start-daemon": "forever start -l forever.log -o out.log -e err.log app.js",
-    "stop-daemon": "forever stop app.js",
     "debug": "node --inspect app.js"
   },
   "keywords": [],

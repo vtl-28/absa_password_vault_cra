@@ -32,16 +32,9 @@ app.use(
 );
 app.set("port", process.env.PORT || 3001);
 
-// if (process.env.NODE_ENV === 'production') {
-//   app.use(express.static(path.join(__dirname, "/client/dist")));
-//   app.get("*", (req, res) => {
-//     res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
-//   });
-// }else{
-//   app.get("/", (req, res) => {
-//     res.send("Api running");
-//   });
-// }
+if(process.env.NODE_ENV === 'production') {
+  app.use(express.static('client/build'));
+}
 
 app.use(
   expressSession({
