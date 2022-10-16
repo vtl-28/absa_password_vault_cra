@@ -2,14 +2,13 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const path = require("path");
-//const favicon = require("serve-favicon");
 const mongoose = require("mongoose");
 const expressSession = require("express-session");
 const passport = require("passport");
 const MongoStore = require("connect-mongo");
 const cors = require("cors");
 const morgan = require('morgan'); // import morgan
-//const rfs = require("rotating-file-stream");
+
 
 const connectDB = require("./config/db_conn");
 const homeRoute = require("./routes/home");
@@ -65,13 +64,13 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(morgan('tiny'));
+
 
 app.use(homeRoute);
 app.use(userRoute);
 app.use(passwordHintRoute);
 app.use(applicationPasswordsRoute);
-
-
 
 app.listen(app.get("port"), () => {
   console.log(
