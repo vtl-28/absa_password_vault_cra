@@ -1,0 +1,38 @@
+{
+  "name": "absa_password_vault_cra",
+  "version": "1.0.0",
+  "description": "Password manager used to help internal staff of Absa to store the passwords to the many applications and systems they use to get work done",
+  "main": "app.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "build": "cd client && npm run build",
+    "install-client": "cd client && npm install",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm run install-client && npm run build",
+    "start": "nodemon app.js",
+    "client": "cd client && npm start",
+    "dev": "concurrently -n 'server,client' -c 'red,green'  \"npm start\" \"npm run client\"",
+    "start-daemon": "forever start -l forever.log -o out.log -e err.log app.js",
+    "stop-daemon": "forever stop app.js",
+    "debug": "node --inspect app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^7.4.0",
+    "connect-mongo": "^4.6.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "express-validator": "^6.14.2",
+    "mongoose": "^6.6.5",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.20",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0"
+  }
+}
