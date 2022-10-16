@@ -8,13 +8,14 @@ Password manager used to help internal staff of Absa to store the passwords to t
 - [Getting Started](#getting_started)
 - [Installation](#installation)
 - [Features](#features)
+- [Tech stack](#tech_stack)
 - [License](#license)
 
 ## About
 This is a web application that I developed back in 2017 when I was still an Absa employee working as a call centre agent in the service desk department. It is the solution to a problem that the service desk department of Absa was facing at the time regarding callers(internal staff) always calling in to have their passwords reset because they would forget the passwords to the many applications and systems they were using internally to get work done. 
 
 ## Demo
-A live version of this project can be found at <a alt="live link" src="https://absa-password-vault.herokuapp.com/">https://absa-password-vault.herokuapp.com/</a>
+A live version of this project can be found at <a alt="live link" src="https://absa-password-vault-cra.herokuapp.com/">https://absa-password-vault-cra.herokuapp.com/</a>
 ## Recorded Visual
 <iframe src="https://www.loom.com/embed/0a9880d11abc469fad61f4932350285b" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
 
@@ -24,7 +25,7 @@ A live version of this project can be found at <a alt="live link" src="https://a
 
 ## Installation
 
-- Once you have a copy of the project on your machine, navigate to the root of the project, and run the npm run dev command to launch the application
+- Once you have a copy of the project on your machine, open your terminal and split it in to two: one for the server, and the other for the client. In the terminal for the server, navigate to the root of the project and run npm install command to install all dependencies for the server. In the client terminal, navigate to the client folder and run npm install command to install all dependencies for the client. Once that is done, head back to your server teminal, in the root of the project and run the npm run dev command to launch the application
 
 ## Features
 - Users can store the password and username of their favourite applications
