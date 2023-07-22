@@ -17,7 +17,7 @@ This is a web application that I developed back in 2017 when I was still an Absa
 ## Demo
 A live version of this project can be found at <a alt="live link" src="https://absa-password-vault-cra.herokuapp.com/">https://absa-password-vault-cra.herokuapp.com/</a>
 ## Recorded Visual
-<iframe src="https://www.loom.com/embed/0a9880d11abc469fad61f4932350285b" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+https://github.com/vtl-28/absa_password_vault_cra/assets/73833164/e89d60d6-a6c1-4efb-93e9-a49c35a34574
 
 ## Getting Started
 - To run this application on your machine, one must have git and nodejs installed on their machine
