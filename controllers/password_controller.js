@@ -1,9 +1,9 @@
 const Password = require("../models/password");
 const User = require("../models/user");
-const gen_password = require("../lib/password_utils").genPassword;
+// const gen_password = require("../lib/password_utils").genPassword;
 const { encrypt, decrypt } = require("../lib/password_utils");
-let encryptedKey = "",
-  decryptedKey = "";
+// let encryptedKey = "",
+//   decryptedKey = "";
 
 module.exports = {
   //handler to create and store user application password
@@ -19,15 +19,19 @@ module.exports = {
 
     Password.create(password_params)
       .then((password) => {
+        console.log(password)
         res.status(200).send(password);
       })
       .catch((error) => {
         res.status(404).send(`Error saving password: ${error.message}`);
       });
   },
-  showApplicationPassword: (req, res, next) => {
-    Password.find()
+  show_app_password: (req, res, next) => {
+    const { department } = req.query;
+    console.log(department)
+    Password.find({ department })
       .then((password) => {
+        console.log(password)
         res.status(200).send(password);
       })
       .catch((error) => {
@@ -38,7 +42,7 @@ module.exports = {
           );
       });
   },
-  decryptApplicationPassword: (req, res, next) => {
+  decrypt_app_password: (req, res, next) => {
     decryptedKey = decrypt(encryptedKey);
     Password.findOne({ application_password: encryptedKey })
       .then((password) => {
@@ -50,7 +54,7 @@ module.exports = {
           .send(`Error fetching and decrypting password: ${error.message}`);
       });
   },
-  deletePassword: (req, res, next) => {
+  delete_password: (req, res, next) => {
     Password.findByIdAndRemove({ _id: req.params.id })
       .then((data) => {
         res.json({

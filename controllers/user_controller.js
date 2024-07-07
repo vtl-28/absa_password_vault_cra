@@ -1,7 +1,5 @@
 const User = require("../models/user");
-const { validationResult } = require("express-validator");
-const gen_password = require("../lib/password_utils").genPassword;
-const email_helper = require("../config/send_email");
+const generate_token = require("../config/generate_token");
 
 module.exports = {
   //handler to access page to register user
@@ -12,32 +10,46 @@ module.exports = {
     });
   },
   //handler to create and register a new user
-  create_user: (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      let messages = errors.array().map((e) => e.msg);
-      req.skip = true;
-      res.status(400).send(messages.toString());
-    } else {
-      const salt_hash = gen_password(req.body.master_password);
-      const salt = salt_hash.salt;
-      const hash = salt_hash.hash;
-      let user_params = {
-        email: req.body.email,
-        name: req.body.name,
-        hash: hash,
-        salt: salt,
-        confirm_master_password: req.body.confirm_master_password,
-        master_password_hint: req.body.master_password_hint,
-      };
+  create_user: async (req, res, next) => {
+    console.log(req.body)
+    const { email, name, password, master_password_hint } = req.body;
+    const emailRegex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
 
-      User.create(user_params)
-        .then((user) => {
-          res.status(201).send(`User ${user.name} successfully created`);
-        })
-        .catch((error) => {
-          res.status(404).send(`${error.message}`);
-        });
+    if (!name || !email || !password) {
+      res.status(400).send("Please enter all the fields");
+      return;
+    }
+
+    const user_exists = await User.findOne({ email });
+  
+    if (user_exists) {
+      res.status(400).send("User already exists");
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      res.status(400).send("Invalid email");
+      return;
+    }
+
+    try {
+      const user = await User.create({
+        name,
+        email,
+        password,
+        master_password_hint
+      });
+
+      if (user) {
+        console.log(user)
+        const token = generate_token(user._id);
+        user.token = token;
+        res.status(201).send(user);
+      } else {
+        res.status(400).send("Could not register user");
+      }
+    } catch (error) {
+      res.status(400).send(error);
     }
   },
   fetch_user: (req, res, next) => {
@@ -54,6 +66,34 @@ module.exports = {
         res.status(404).send(`${error.message}`);
       });
   },
+  login_user: async (req, res, next) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).send("Please enter all the fields");
+    }
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).send("User does not exist");
+        }
+
+        const isMatch = await user.matchPassword(password);
+        if (!isMatch) {
+            return res.status(401).send("Invalid Email or Password");
+        }
+
+        const token = generate_token(user._id);
+        user.token = token;
+        console.log(user);
+
+        res.status(201).send(user);
+    } catch (error) {
+        console.error(error); // Log error for debugging
+        res.status(500).send("Server Error");
+    }
+  },
   //handler to access page to update details of user
   fetch_account: (req, res, next) => {
     let user_id = {
@@ -61,6 +101,7 @@ module.exports = {
     };
     User.findById(user_id)
       .then((user) => {
+        console.log(user);
         res.status(200).send(user);
       })
       .catch((error) => {
@@ -68,30 +109,41 @@ module.exports = {
       });
   },
   //handler to update details of user
-  update_user: (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      let messages = errors.array().map((e) => e.msg);
-      req.skip = true;
-      res.status(400).send(messages.toString());
-    } else {
-      debugger;
-      let user_id = req.params.id;
+  update_user: async (req, res, next) => {
+    const user_id = req.params.id;
 
-      let user_params = {
-        email: req.body.email,
-        name: req.body.name,
-        master_password_hint: req.body.master_password_hint,
-      };
-      User.findByIdAndUpdate(user_id, {
-        $set: user_params,
-      })
-        .then((user) => {
-          res.status(200).send(`${user.name}'s account updated successfully!`);
-        })
-        .catch((error) => {
-          res.status(404).send(`Error updating user by ID: ${error.message}`);
-        });
+    const { email, name, master_password_hint } = req.body;
+
+    if (!name && !email || !master_password_hint) {
+      res.status(404).send("Please fill in the form to update your profile");
+      return;
     }
-  },
+
+    const user = await User.findOne({ email });
+  if (user !== null) {
+    res.status(404).send("User with this email already exists");
+    return;
+  }
+
+  const user_params = {
+    name,
+    email,
+    master_password_hint
+  }
+  Object.keys(user_params).forEach((detail) => {
+    if (user_params[detail] === "") {
+      delete user_params[detail];
+    }
+  });
+
+  try {
+    const updated_user = await User.findByIdAndUpdate(user_id, {
+      $set: user_params,
+    });
+    console.log(updated_user)
+    res.status(200).send(updated_user);
+  } catch (error) {
+    res.status(404).send(error);
+  }
+}
 };

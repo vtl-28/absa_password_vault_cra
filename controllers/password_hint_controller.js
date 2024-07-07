@@ -1,5 +1,4 @@
 const User = require("../models/user");
-const { validationResult } = require("express-validator");
 const email_helper = require("../config/send_email");
 
 module.exports = {

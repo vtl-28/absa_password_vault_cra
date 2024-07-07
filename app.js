@@ -1,22 +1,13 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const path = require("path");
-const mongoose = require("mongoose");
-const expressSession = require("express-session");
-const passport = require("passport");
-const MongoStore = require("connect-mongo");
 const cors = require("cors");
 const morgan = require('morgan'); // import morgan
 
-
 const connectDB = require("./config/db_conn");
-const homeRoute = require("./routes/home");
 const userRoute = require("./routes/user");
 const passwordHintRoute = require("./routes/password_hint");
 const applicationPasswordsRoute = require("./routes/application_passwords");
-const { dirname } = require("path");
-
 connectDB();
 
 //app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
@@ -32,35 +23,33 @@ app.use(
 );
 app.set("port", process.env.PORT || 3001);
 
-if(process.env.NODE_ENV === 'production') {
-  app.use(express.static('client/build'));
-}
+// if(process.env.NODE_ENV === 'production') {
+//   app.use(express.static('client/build'));
+// }
 
-app.use(
-  expressSession({
-    secret: process.env.SESSION_SECRET,
-    saveUninitialized: true,
-    resave: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.DB_URI,
-    }),
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24,
-    },
-  })
-);
+// app.use(
+//   expressSession({
+//     secret: process.env.SESSION_SECRET,
+//     saveUninitialized: true,
+//     resave: false,
+//     store: MongoStore.create({
+//       mongoUrl: process.env.DB_URI,
+//     }),
+//     cookie: {
+//       maxAge: 1000 * 60 * 60 * 24,
+//     },
+//   })
+// );
 
 //middleware to print session details of authenticated user
-app.use((req, res, next) => {
-  console.log(req.session);
-  console.log(req.user);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log(req.session);
+//   console.log(req.user);
+//   next();
+// });
 
 app.use(morgan('tiny'));
 
-
-app.use(homeRoute);
 app.use(userRoute);
 app.use(passwordHintRoute);
 app.use(applicationPasswordsRoute);
