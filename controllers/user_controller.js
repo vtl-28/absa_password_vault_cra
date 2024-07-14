@@ -67,9 +67,10 @@ module.exports = {
       });
   },
   login_user: async (req, res, next) => {
-    const { email, password } = req.body;
+    const { email, master_password } = req.body;
+    ///console.log(req.body)
 
-    if (!email || !password) {
+    if (!email || !master_password) {
         return res.status(400).send("Please enter all the fields");
     }
 
@@ -79,7 +80,7 @@ module.exports = {
             return res.status(400).send("User does not exist");
         }
 
-        const isMatch = await user.matchPassword(password);
+        const isMatch = await user.matchPassword(master_password);
         if (!isMatch) {
             return res.status(401).send("Invalid Email or Password");
         }

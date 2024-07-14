@@ -22,10 +22,6 @@ const user_schema = Schema({
         type: String,
         trim: true
     },
-    application_passwords: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Password'
-    }],
     token: {
         type: "String"
     }

@@ -17,7 +17,14 @@ const password_schema = Schema({
     application_password: {
         type: String,
         trim: true
+    },
+    created_by: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
     }
+},
+{
+    timestamps: true,
 });
 
 module.exports = mongoose.model('Password', password_schema);
