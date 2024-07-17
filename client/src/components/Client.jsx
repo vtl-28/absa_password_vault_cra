@@ -222,7 +222,7 @@ export default function Client() {
 
   const displayApplication = (
     <ul>
-      {data.map((pass) => (
+      {app.map((pass) => (
         <ApplicationPasswordCard pass={pass} handleDelete={handleDelete} />
       ))}
     </ul>
@@ -241,9 +241,9 @@ export default function Client() {
     
     <div className="flex flex-col mt-2">
       {successMessage && showSuccess ? successAlert : ""}
-      { data.length > 0 ? displayApplication : addApplication }
-      {/* {openAddItem ? addApplication : ""}
-      {openList ? displayApplication : ""} */}
+{/*       { data.length > 0 ? displayApplication : addApplication } */}
+      {openAddItem ? addApplication : ""}
+      {openList ? displayApplication : ""}
       <MyVerticallyCenteredModal
         show={modalShow}
         onHide={() => setModalShow(false)}
