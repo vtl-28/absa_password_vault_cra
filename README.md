@@ -21,11 +21,24 @@ https://github.com/vtl-28/absa_password_vault_cra/assets/73833164/e89d60d6-a6c1-
 
 ## Getting Started
 - To run this application on your machine, one must have git and nodejs installed on their machine
-- To get a copy of this project on your local machine, use the git clone command on the following link or repository: https://github.com/vtl-28/absa_password_manager.git in the directory of your choice on your machine
+- To get a copy of this project on your local machine
+  ```bash
+  git clone https://vtl-28/absa_password_vault_cra.git
+  ```
 
 ## Installation
 
-- Once you have a copy of the project on your machine, open your terminal and split it in to two: one for the server, and the other for the client. In the terminal for the server, navigate to the root of the project and run npm install command to install all dependencies for the server. In the client terminal, navigate to the client folder and run npm install command to install all dependencies for the client. Once that is done, head back to your server teminal, in the root of the project and run the npm run dev command to launch the application
+client
+```bash
+  cd client
+  npm install
+  npm run dev
+  ```
+server
+```bash
+  npm install
+  npm start
+  ```
 
 ## Features
 - Users can store the password and username of their favourite applications
