@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
+import api from "../api";
 
 function PasswordHint() {
   const [email, setEmail] = useState("");
@@ -43,10 +44,11 @@ function PasswordHint() {
   function handleSubmit(e) {
     e.preventDefault(); 
 
-    axios
-      .post("/password_hint", email)
+    api
+      .post("/password_hint", {email})
       .then((response) => {
         setEmail('');
+        console.log(response.data)
         setSuccessMessage(response.data);
         setShowSuccess((showSuccess) => !showSuccess);
       })

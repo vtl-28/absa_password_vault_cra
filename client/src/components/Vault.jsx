@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import axios from "axios";
 import {
   useLocation,
@@ -7,35 +7,28 @@ import {
   Link,
   NavLink,
 } from "react-router-dom";
+import useUserStore from '../store/UserStore';
 
-function Header() {
-  const [user, setUser] = useState({});
-  const location = useLocation();
+
+function Vault() {
+  const user = useUserStore((state) => state.user);
+  
+  //const { state } = useLocation();
   const navigate = useNavigate();
-//   const config = {
-//     headers: {
-//       'content-type': 'application/json',
-//       'Accept': 'application/json'
-//     }
-// }
-
-  useEffect(() => {
-    axios
-      .get(`/user/${location.state._id}`)
-      .then((response) => {
-        setUser(response.data);
-      })
-      .catch((error) => {});
-  }, []);
+  //console.log(state)
   function handleLogout() {
     axios.post("/logout");
     navigate("/");
   }
+  let activeStyle = {
+    color: "red",
+  };
 
   return (
-    <div className="py-4" style={{ backgroundColor: "#F0325A" }}>
+    <div className="w-screen h-screen" style={{ overflowY: "hidden" }}>
+        <div className="py-4" style={{ backgroundColor: "#F0325A" }}>
       <div className="container flex flex-row justify-between px-12 mx-auto">
-        <h1 className="text-2xl text-white">Welcome, {user.name}</h1>
+        <h1 className="text-2xl text-white">Welcome, { user ? user.name : "anonymous"}</h1>
         <div className="mt-1">
           <Link to={`/account/${user._id}`} className="font-normal text-white">
             My account
@@ -46,17 +39,6 @@ function Header() {
         </div>
       </div>
     </div>
-  );
-}
-
-function Vault() {
-  let activeStyle = {
-    color: "red",
-  };
-
-  return (
-    <div className="w-screen h-screen" style={{ overflowY: "hidden" }}>
-      <Header />
       <div className="container w-9/12 h-full mx-auto mt-6">
         <div className="grid h-full grid-cols-10 grid-rows-4 gap-10">
           <div className="flex flex-col col-span-3 row-span-3 bg-white border border-opacity-100 rounded border-gray">

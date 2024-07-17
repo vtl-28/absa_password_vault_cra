@@ -2,23 +2,10 @@ const User = require("../models/user");
 const generate_token = require("../config/generate_token");
 
 module.exports = {
-  //handler to access page to register user
-  new_user: (req, res) => {
-    res.render("register", {
-      error: req.flash("error"),
-      validation_errors: req.flash("validation_errors"),
-    });
-  },
   //handler to create and register a new user
   create_user: async (req, res, next) => {
-    console.log(req.body)
-    const { email, name, password, master_password_hint } = req.body;
+    const { email, name, master_password, confirm_master_password, master_password_hint } = req.body;
     const emailRegex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
-
-    if (!name || !email || !password) {
-      res.status(400).send("Please enter all the fields");
-      return;
-    }
 
     const user_exists = await User.findOne({ email });
   
@@ -32,19 +19,23 @@ module.exports = {
       return;
     }
 
+    if (master_password !== confirm_master_password) {
+      res.status(400).send("Passwords do not match");
+      return;
+    }
+
     try {
       const user = await User.create({
         name,
         email,
-        password,
+        password: master_password,
         master_password_hint
       });
 
       if (user) {
-        console.log(user)
         const token = generate_token(user._id);
         user.token = token;
-        res.status(201).send(user);
+        res.status(201).send("User account created");
       } else {
         res.status(400).send("Could not register user");
       }
@@ -53,7 +44,6 @@ module.exports = {
     }
   },
   fetch_user: (req, res, next) => {
-    debugger;
     let user_id = {
       _id: req.params.id,
     };
@@ -68,30 +58,25 @@ module.exports = {
   },
   login_user: async (req, res, next) => {
     const { email, master_password } = req.body;
-    ///console.log(req.body)
-
-    if (!email || !master_password) {
-        return res.status(400).send("Please enter all the fields");
-    }
 
     try {
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).send("User does not exist");
+            res.status(400).send("User does not exist");
+            return;
         }
 
         const isMatch = await user.matchPassword(master_password);
         if (!isMatch) {
-            return res.status(401).send("Invalid Email or Password");
+            res.status(401).send("Invalid Email or Password");
+            
         }
 
         const token = generate_token(user._id);
         user.token = token;
-        console.log(user);
 
         res.status(201).send(user);
     } catch (error) {
-        console.error(error); // Log error for debugging
         res.status(500).send("Server Error");
     }
   },
@@ -141,8 +126,7 @@ module.exports = {
     const updated_user = await User.findByIdAndUpdate(user_id, {
       $set: user_params,
     });
-    console.log(updated_user)
-    res.status(200).send(updated_user);
+    res.status(201).send("Account info updated successfully");
   } catch (error) {
     res.status(404).send(error);
   }

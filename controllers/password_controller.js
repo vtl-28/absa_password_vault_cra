@@ -1,9 +1,7 @@
 const Password = require("../models/password");
 const User = require("../models/user");
-// const gen_password = require("../lib/password_utils").genPassword;
+const mongoose = require('mongoose')
 const { encrypt, decrypt } = require("../lib/password_utils");
-// let encryptedKey = "",
-//   decryptedKey = "";
 
 module.exports = {
   //handler to create and store user application password
@@ -16,15 +14,12 @@ module.exports = {
       username: req.body.username,
       application_password: encrypted_data,
       created_by: req.user._id,
-      // security_key,
-      // init_vector
     };
 
     try {
       const password = await (
         await Password.create(password_params)
       ).populate("created_by", "_id email name master_password_hint");
-      console.log(password);
       res.status(201).send(password);
     } catch (error) {
       res.status(404).send(`Error saving password: ${error.message}`);
@@ -44,7 +39,6 @@ module.exports = {
       }
   
       const passwords = await Password.find(query).populate('created_by', 'name email'); 
-      console.log(passwords);
       res.status(200).send(passwords);
     } catch (error) {
       console.error(error);

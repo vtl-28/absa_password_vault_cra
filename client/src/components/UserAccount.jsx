@@ -3,6 +3,7 @@ import axios from "axios";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
+import api from "../api";
 
 function UserAccout() {
   let { id } = useParams();
@@ -19,7 +20,7 @@ function UserAccout() {
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
-    axios
+    api
       .get(`/account/${id}`)
       .then((response) => {
         setUser(response.data);
@@ -61,9 +62,10 @@ function UserAccout() {
   function handleSubmit(e) {
     e.preventDefault();
 
-    axios
-      .put(`/account/${id}`, data)
+    api
+      .put(`/user/update/${id}`, data)
       .then((response) => {
+        console.log(response.data);
         setSuccessMessage(response.data);
         setShowSuccess((showSuccess) => !showSuccess);
       })

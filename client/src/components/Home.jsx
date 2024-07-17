@@ -1,20 +1,40 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo1 from "../assets/ABSA_Group_Limited_Logo.png";
-import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
-import Modal from 'react-bootstrap/Modal';
+import api from "../api";
+import useUserStore from '../store/UserStore';
+
 
 const LoginForm = () => {
   const [data, setData] = useState({
     email: "",
     master_password: "",
   });
-  const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState([]);
   const navigate = useNavigate();
+  const setUser = useUserStore((state) => state.setUser);
   const [showError, setShowError] = useState(false);
+
+  const login_details = [{ "email": "malaika@gmail.com", "password": "123456" },
+    { "email": "charyl@gmail.com", "password": "123456" },
+    { "email": "susan@gmail.com", "password": "123456" },
+    { "email": "hope@gmail.com", "password": "123456" },
+    { "email": "vuyisile@gmail.com", "password": "123456" },
+    { "email": "vtlehola@gmail.com", "password": "123456" },
+    { "email": "botho@yahoo.com", "password": "123456" }];
+  
+    const get_login_details = (e) => {
+      e.preventDefault();
+      const random_details = Math.floor(Math.random() * login_details.length);
+      const random = login_details[random_details];
+      setData({
+        email: random.email,
+        master_password: random.password,
+      });
+    };
+  
 
   let errorAlert = (
     <Alert className="px-3 py-1 bg-red-100 border-2 border-red-500 border-opacity-25 rounded-md">
@@ -33,13 +53,21 @@ const LoginForm = () => {
   function handleSubmit(e) {
     e.preventDefault();
 
-    axios
-      .post("/login", data)
-      .then((response) => {
-        navigate("/vault", { state: response.data });
+    if (!data.email || !data.master_password) {
+      setErrorMessage("Please enter all the fields");
+      setShowError((showError) => !showError);
+      return;
+    }
+
+    api.post("/user/login", data).then((response) => {
+        localStorage.setItem("user", JSON.stringify(response.data));
+        localStorage.setItem("jwt", JSON.stringify(response.data.token));
+        
+        setUser(response.data);
+        navigate("/vault");
       })
       .catch((error) => {
-        setErrorMessage(error.response.data);
+        setErrorMessage(error.message);
         setShowError((showError) => !showError);
       });
   }
@@ -70,12 +98,12 @@ const LoginForm = () => {
             <Link to="/password_hint">Get master password hint</Link>
           </button>
           <hr className="mt-8" />
-          <div className="flex flex-row justify-between mt-4">
+          <div className="flex xs:flex-col justify-between mt-4">
             <button className="w-24 text-sm btn-submit sm:w-36 sm:text-base lg:w-48 xl:w-40">
               Log in
             </button>
             <button className="text-sm btn-cancel sm:w-36 sm:text-base lg:w-48 xl:w-40">
-              <Link to="/register">Create account</Link>
+              <Link onClick={get_login_details}>Login details</Link>
             </button>
           </div>
         </form>

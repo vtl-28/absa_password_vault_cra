@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
 import copy from "copy-to-clipboard";
+import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
-import Button from "react-bootstrap/Button";
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 import Alert from "react-bootstrap/Alert";
+import useUserStore from '../store/UserStore';
+import fetch_application_client from "../Utils/applications_client";
+import api from "../api";
 
 function ApplicationPasswordCard({ pass, handleDelete }) {
   const { _id, application_name, username, password } = pass;
@@ -13,8 +18,8 @@ function ApplicationPasswordCard({ pass, handleDelete }) {
     alert(`Copied!`);
   };
   const copyPasswordToClipboard = () => {
-    axios
-      .get(`/decrypt_password/${password}`)
+    api
+      .get(`/decrypt_password/${_id}`)
       .then((response) => {
         copy(response.data);
       });
@@ -46,8 +51,8 @@ function ApplicationPasswordCard({ pass, handleDelete }) {
     </li>
   );
 }
-export default function Client() {
-  const location = useLocation();
+
+function MyVerticallyCenteredModal(props) {
   const [applicationPassword, setApplicationPassword] = useState({
     department: "Client",
     application_name: "",
@@ -58,30 +63,20 @@ export default function Client() {
   const [app, setApp] = useState([]);
   const [openAddNewItem, setOpenAddNewItem ] = useState(false);
   const [openList, setOpenList] = useState(false);
+  const [show, setShow] = useState(false);
   const [openAddItem, setOpenAddItem] = useState(true);
-  const [id, setId] = useState("");
-  const [showSuccess, setShowSuccess] = useState(false);
-
-
+  
   function handleChange(e) {
     setApplicationPassword((applicationPassword) => ({
       ...applicationPassword,
       [e.target.name]: e.target.value,
     }));
   }
-  function handleDelete(e) {
-   
-      axios.delete(`/delete_password/${e.target.name}`);
-      setApp(app.filter((app) => app._id !== e.target.name));
 
-    setOpenAddItem((openAddItem) => !openAddItem);
-    setOpenList((openList) => !openList);
-
-  }
 
   function handleSubmit(e) {
     e.preventDefault();
-    axios
+    api
       .post("/create_password", applicationPassword)
       .then((response) => {
         setApplicationPassword({
@@ -90,7 +85,6 @@ export default function Client() {
           username: "",
           application_password: "",
         });
-        setApp([...app, response.data]);
         setOpenList((openList) => !openList);
         setOpenAddItem((openAddItem) => !openAddItem);
         setSuccessMessage("Application password successfully created");
@@ -99,55 +93,21 @@ export default function Client() {
       .catch((error) => {});
   }
 
-  let successAlert = (
-    <Alert className="px-3 py-1 bg-green-100 border-2 border-green-500 border-opacity-25 rounded-md">
-      <div className="flex flex-row justify-between">
-        <p className="text-sm text-green-500">{successMessage}</p>
-        <Button
-          className="text-green-500"
-          onClick={() => setShowSuccess(false)}
-        >
-          x
-        </Button>
-      </div>
-    </Alert>
-  );
-
-  const displayApplication = (
-    <ul>
-      {app.map((pass) => (
-        <ApplicationPasswordCard pass={pass} handleDelete={handleDelete} />
-      ))}
-    </ul>
-  );
-  const addApplication = (
-    <div>
-      <h3 className="mb-2">There are no items to list</h3>
-      <button type="button" className="btn-add-item" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">
-        Add item
-      </button>
-    </div>
-  );
-
   return (
-    
-    <div className="flex flex-col mt-2">
-      {successMessage && showSuccess ? successAlert : ""}
-      {openAddItem ? addApplication : ""}
-      {openList ? displayApplication : ""}
-      <div className="fixed border border-gray rounded-md hidden h-full overflow-x-hidden overflow-y-auto outline-none modal fade" id="exampleModalCenter" tabIndex="-1" aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog">
-         <div className="relative w-auto pointer-events-none modal-dialog modal-dialog-centered">
-            <div className="relative flex flex-col w-auto text-current bg-white border-none rounded-md shadow-lg outline-none pointer-events-auto modal-content bg-clip-padding">
-              <div className="flex items-center justify-between flex-shrink-0 px-3 pt-4 border-b border-gray-200 modal-header rounded-t-md">
-                <h5 className="text-xl font-medium leading-normal text-gray-800" id="exampleModalScrollableLabel">
-                  Add item
-                </h5>
-                <button type="button"
-                  className="box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 btn-close focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
-                  data-bs-dismiss="modal" aria-label="Close">X</button>
-              </div>
-              <div className="relative px-12 py-4 modal-body">
-              <form onSubmit={handleSubmit}>
+    <Modal
+      {...props}
+      size="md"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+      dialogClassName="modal-50w"
+    >
+      <Modal.Header closeButton >
+        <Modal.Title id="contained-modal-title-vcenter">
+          Add Item
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+      <form onSubmit={handleSubmit}>
               <select name="department" className="form-select
       appearance-none
       block
@@ -173,20 +133,23 @@ export default function Client() {
       <div className="mt-4 mb-4 form-group">
         <label className="inline-block font-semibold text-gray-700 form-label">Application name</label>
         <input type="text" name="application_name" onChange={handleChange}
-            value={applicationPassword.application_name} className="block w-full px-0 py-0 m-0 text-base font-normal text-gray-700 transition ease-in-out bg-white border border-gray-300 border-solid rounded form-control bg-clip-padding focus:text-gray-700 focus:bg-white focus:border-red-600 focus:outline-none"
+            value={applicationPassword.application_name} 
+             className="block w-full px-0 py-0 m-0 text-base font-normal text-gray-700 transition ease-in-out bg-white border border-gray-300 border-solid rounded form-control bg-clip-padding focus:text-gray-700 focus:bg-white focus:border-red-600 focus:outline-none"
           aria-describedby="emailHelp" />
       </div>
       <div className="mb-4 form-group">
         <label  className="inline-block font-semibold text-gray-700 form-label">Username</label>
         <input type="text" name="username" onChange={handleChange}
-            value={applicationPassword.username}  className="block w-full px-0 py-0 m-0 text-base font-normal text-gray-700 transition ease-in-out bg-white border border-gray-300 border-solid rounded form-control bg-clip-padding focus:text-gray-700 focus:bg-white focus:border-red-600 focus:outline-none"
+            value={applicationPassword.username}
+              className="block w-full px-0 py-0 m-0 text-base font-normal text-gray-700 transition ease-in-out bg-white border border-gray-300 border-solid rounded form-control bg-clip-padding focus:text-gray-700 focus:bg-white focus:border-red-600 focus:outline-none"
           aria-describedby="emailHelp"/>
       
       </div>
       <div className="mb-6 form-group">
         <label className="inline-block font-semibold text-gray-700 form-label">Password</label>
         <input type="password" name="application_password" onChange={handleChange}
-            value={applicationPassword.application_password}  className="block w-full px-0 py-0 m-0 text-base font-normal text-gray-700 transition ease-in-out bg-white border border-gray-300 border-solid rounded form-control bg-clip-padding focus:text-gray-700 focus:bg-white focus:border-red-600 focus:outline-none"
+            value={applicationPassword.application_password}
+              className="block w-full px-0 py-0 m-0 text-base font-normal text-gray-700 transition ease-in-out bg-white border border-gray-300 border-solid rounded form-control bg-clip-padding focus:text-gray-700 focus:bg-white focus:border-red-600 focus:outline-none"
         />
       </div>
           <div className="flex flex-row mt-10">
@@ -196,11 +159,95 @@ export default function Client() {
                   
           </div>
         </form>
-              </div>
-            </div>
-        </div>
+      </Modal.Body>
+    </Modal>
+  );
+}
+
+export default function Client() {
+  const [successMessage, setSuccessMessage] = useState("");
+  const [app, setApp] = useState([]);
+  const [openAddNewItem, setOpenAddNewItem ] = useState(false);
+  const [openList, setOpenList] = useState(false);
+  const [show, setShow] = useState(false);
+  const [openAddItem, setOpenAddItem] = useState(true);
+  const [id, setId] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [modalShow, setModalShow] = React.useState(false);
+  const user = useUserStore((state) => state.user);
+
+  const user_id = user._id;
+
+  const { data, error, status } = useQuery({
+    queryKey: ['fetch_application', user_id], // Unique key
+    queryFn: () => fetch_application_client(user_id), // Pass a function reference
+    refetchOnMount: true,
+    refetchInterval: 2000,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
+  });
+
+  if (status === 'loading') {
+    return <div>Loading...</div>;
+  }
+
+  if (status === 'error') {
+    return <div>Error: {error.message}</div>;
+  }
+
+
+  function handleDelete(e) {
+      api.delete(`/delete_password/${e.target.name}`);
+      setApp(app.filter((app) => app._id !== e.target.name));
+
+    setOpenAddItem((openAddItem) => !openAddItem);
+    setOpenList((openList) => !openList);
+
+  }
+
+
+  let successAlert = (
+    <Alert className="px-3 py-1 bg-green-100 border-2 border-green-500 border-opacity-25 rounded-md">
+      <div className="flex flex-row justify-between">
+        <p className="text-sm text-green-500">{successMessage}</p>
+        <Button
+          className="text-green-500"
+          onClick={() => setShowSuccess(false)}
+        >
+          x
+        </Button>
       </div>
-      
+    </Alert>
+  );
+
+  const displayApplication = (
+    <ul>
+      {data.map((pass) => (
+        <ApplicationPasswordCard pass={pass} handleDelete={handleDelete} />
+      ))}
+    </ul>
+  );
+  const addApplication = (
+    <div>
+      <h3 className="mb-2">There are no items to list</h3>
+      <button type="button" className="btn-add-item" onClick={() => setModalShow(true)}>
+        Add item
+      </button>
+    
+    </div>
+  );
+
+  return (
+    
+    <div className="flex flex-col mt-2">
+      {successMessage && showSuccess ? successAlert : ""}
+      { data.length > 0 ? displayApplication : addApplication }
+      {/* {openAddItem ? addApplication : ""}
+      {openList ? displayApplication : ""} */}
+      <MyVerticallyCenteredModal
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+      />      
     </div>
   );
 }

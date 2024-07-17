@@ -1,7 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Favicon from "react-favicon";
-//import './tailwind_output.css';
 import favicon from '../src/assets/absa_logo.jpg'
 import Home from './components/Home';
 import Register from './components/Register';

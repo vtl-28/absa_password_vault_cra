@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
+import api from "../api";
 
 const RegisterForm = () => {
   const [data, setData] = useState({
@@ -47,9 +47,17 @@ const RegisterForm = () => {
   function handleSubmit(e) {
     e.preventDefault();
 
-    axios
+    if (!data.email || !data.master_password) {
+      setErrorMessage("Please enter all the fields");
+      setShowError((showError) => !showError);
+      return;
+    }
+
+    api
       .post("/user/create", data)
       .then((response) => {
+        setSuccessMessage(response.data);
+        setShowSuccess((showSuccess) => !showSuccess);
         setData({
           email: "",
           name: "",
@@ -57,12 +65,9 @@ const RegisterForm = () => {
           confirm_master_password: "",
           master_password_hint: "",
         });
-        debugger;
-        setSuccessMessage(response.data);
-        setShowSuccess((showSuccess) => !showSuccess);
       })
       .catch((error) => {
-        setErrorMessage(error.response.data);
+        setErrorMessage(error);
         setShowError((showError) => !showError);
       });
   }
@@ -148,11 +153,8 @@ const RegisterForm = () => {
               Submit
             </button>
             <button className="w-32 p-1 btn-cancel sm:w-36 lg:w-48 xl:w-40">
-              {successMessage ? (
-                <Link to="/">Back</Link>
-              ) : (
                 <Link to="/">Cancel</Link>
-              )}
+
             </button>
           </div>
         </form>
