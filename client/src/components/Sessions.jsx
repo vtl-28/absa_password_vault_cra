@@ -223,9 +223,9 @@ export default function Sessions() {
 
   const displayApplication = (
     <ul>
-      {data.map((pass) => (
+      { data ? data.map((pass) => (
         <ApplicationPasswordCard pass={pass} handleDelete={handleDelete} />
-      ))}
+      )) : ""}
     </ul>
   );
   const addApplication = (
@@ -242,7 +242,7 @@ export default function Sessions() {
     
     <div className="flex flex-col mt-2">
       {successMessage && showSuccess ? successAlert : ""}
-      { data.length > 0 ? displayApplication : addApplication }
+      { data?.length > 0 ? displayApplication : addApplication }
       
       <MyVerticallyCenteredModal
         show={modalShow}

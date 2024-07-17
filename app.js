@@ -10,15 +10,13 @@ const passwordHintRoute = require("./routes/password_hint");
 const applicationPasswordsRoute = require("./routes/application_passwords");
 connectDB();
 
-// app.use(express.static("public"));
-// app.use(express.static("assets"));
-// app.use(express.static("node_modules"));
+
 app.use(cors({ 
   origin: ["https://absa-password-vault-client.vercel.app"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
  }));
- // Handle preflight requests
+// Handle preflight requests
 app.options('*', cors());
 app.use(express.json());
 app.use((req, res, next) => {
