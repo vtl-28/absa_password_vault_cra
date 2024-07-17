@@ -15,7 +15,7 @@ Password manager used to help internal staff of Absa to store the passwords to t
 This is a web application that I developed back in 2017 when I was still an Absa employee working as a call centre agent in the service desk department. It is the solution to a problem that the service desk department of Absa was facing at the time regarding callers(internal staff) always calling in to have their passwords reset because they would forget the passwords to the many applications and systems they were using internally to get work done. 
 
 ## Demo
-A live version of this project can be found at <a alt="live link" src="https://absa-password-vault-cra.herokuapp.com/">https://absa-password-vault-cra.herokuapp.com/</a>
+A live version of this project can be found at <a alt="live link" src="https://absa-password-vault-client.vercel.app/">https://absa-password-vault-client.vercel.app/</a>
 ## Recorded Visual
 https://github.com/vtl-28/absa_password_vault_cra/assets/73833164/e89d60d6-a6c1-4efb-93e9-a49c35a34574
 
