@@ -12,10 +12,8 @@ import useUserStore from '../store/UserStore';
 
 function Vault() {
   const user = useUserStore((state) => state.user);
-  
-  //const { state } = useLocation();
+
   const navigate = useNavigate();
-  //console.log(state)
   function handleLogout() {
     axios.post("/logout");
     navigate("/");
