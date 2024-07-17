@@ -5,6 +5,7 @@ import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
 import api from "../api";
 import useUserStore from '../store/UserStore';
+import axios from "axios";
 
 
 const LoginForm = () => {
@@ -59,7 +60,7 @@ const LoginForm = () => {
       return;
     }
 
-    api.post("/user/login", data).then((response) => {
+    axios.post("https://absa-password-vault-server.vercel.app/user/login", data).then((response) => {
         localStorage.setItem("user", JSON.stringify(response.data));
         localStorage.setItem("jwt", JSON.stringify(response.data.token));
         
