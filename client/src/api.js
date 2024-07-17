@@ -1,5 +1,5 @@
 import axios from "axios";
-const apiUrl = "http://localhost:3001";
+const apiUrl = "https://absa-password-vault-server.vercel.app";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL : apiUrl,
